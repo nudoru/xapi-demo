@@ -1,0 +1,37 @@
+@import "../branding"
+@import "../variables"
+@import "../utils"
+@import "../elevation"
+
+.covermessage__cover
+  @extend %full-background-coverage
+  z-index: $z-modal
+  background-color: $grey-1
+
+.covermessage__message
+  position: relative
+  top: 200px
+  margin: auto
+  padding: $double-base-line-height
+  padding-bottom: 50px
+  width: 400px
+  text-align: center
+  background-color: #fff
+  box-shadow: $elevation-shadow-16
+  h1
+    padding: 0
+    margin: 0
+    margin-bottom: $double-base-line-height
+    font-size: $ms-3
+    color: $blue-dark
+  h2
+    font-size: $ms-2
+    line-height: $base-line-height*3
+    color: $blue-dark-2
+  .loader
+    display: inline-block
+    width: 25px
+    height: 25px
+  .loadingspinner
+    position: relative
+    margin-top: 50px
