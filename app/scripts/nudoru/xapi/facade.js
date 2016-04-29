@@ -8,11 +8,13 @@
 
 import TinCan from 'tincanjs';
 import VerbDictionary from './ADL-Verbs';
+import ActivityDictionary from './ADL-Activity';
 import {defaults, assign} from 'lodash';
 
 let LRS,
     defaultProps    = {},
     verbURLPrefix   = 'http://adlnet.gov/expapi/verbs/',
+    activityURLPrefix = 'http://adlnet.gov/expapi/activities/',
     defaultLanguage = 'en-US';
 
 export default {
@@ -35,23 +37,15 @@ export default {
     });
   },
 
-  // Set defaults to be allied to each statement
-  // Example:
-  // result      : {
-  //   completion: true,
-  //   success   : true,
-  //   score     : {scaled: 1}
-  // }, authority: {
-  //   name: "Irene Instructor",
-  //   mbox: "mailto:irene@example.com"
-  // }
+  // Set defaults to be applied to each statement such as actor or authority
   default(defaultObj) {
     defaultProps = assign({}, defaultObj);
   },
 
   // Returns array of verbs from the ADL list
   getVerbsList() {
-    return Object.keys(VerbDictionary).map((key) => VerbDictionary[key].display[defaultLanguage]);
+    // return Object.keys(VerbDictionary).map((key) => VerbDictionary[key].display[defaultLanguage]);
+    return this.getDictionaryWordsList(VerbDictionary);
   },
 
   // True if the verb is on the ADL list
@@ -59,22 +53,29 @@ export default {
     return this.getVerbsList().indexOf(verb.toLowerCase()) >= 0;
   },
 
+  // Returns array of activity from the ADL list
+  getActivitiesList() {
+    return this.getDictionaryWordsList(ActivityDictionary);
+  },
+
+  // True if the activity is on the ADL list
+  validateActivity(activity) {
+    return this.getActivitiesList().indexOf(activity.toLowerCase()) >= 0;
+  },
+
+  getDictionaryWordsList(dictionary) {
+    return Object.keys(dictionary).map((key) => dictionary[key].display[defaultLanguage]);
+  },
+
   // Create an xAPI statement object
   createStatement(statementData) {
     let statement,
-        {subjectName, subjectID, verbDisplay, objectID, objectName} = statementData;
-
-
+        {subjectName, subjectID, verbDisplay, objectID, objectType, objectName} = statementData;
 
     if (!this.validateVerb(verbDisplay)) {
       console.warn('LRS verb is not in the dictionary', verbDisplay);
     }
 
-    /*
-     "timestamp": "2012-07-05T18:30:32.360Z",
-     "stored": "2012-07-05T18:30:33.540Z",
-     */
-    // TODO use defaultLanguage
     statement = defaults({
       actor : {
         name: subjectName,
@@ -87,11 +88,11 @@ export default {
       object: {
         id        : objectID,
         definition: {
-          name       : {'en-US': objectName}
+          type      : objectType ? activityURLPrefix + objectType : null,
+          name: {'en-US': objectName}
         }
       }
     }, defaultProps);
-
     return new TinCan.Statement(statement);
   },
 

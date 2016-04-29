@@ -54,13 +54,14 @@ class Default extends React.Component {
     super(props, context);
     // {subjectName, subjectID, verbDisplay, objectID, objectName}
     this.state = {
-      subjectName:'Blue Berry',
-      subjectID  : 'blueberry@pietown.com',
-      verbDisplay     : 'completed',
-      objectName:'Filling the pies',
-      objectID   : 'http://pietown.com/Apple_Pie_Filling_101',
-      statement: 'Click Submit to create a statement',
-      isError  : false
+      subjectName : 'Blue Berry',
+      subjectID   : 'blueberry@pietown.com',
+      verbDisplay : 'completed',
+      objectName  : 'Filling the pies',
+      objectType: 'course',
+      objectID    : 'http://pietown.com/Apple_Pie_Filling_101',
+      statement   : 'Click Submit to create a statement',
+      isError     : false
     }
   }
 
@@ -81,8 +82,17 @@ class Default extends React.Component {
         success   : true,
         score     : {scaled: 1}
       }, authority: {
-        name: "Irene Instructor",
-        mbox: "mailto:irene@example.com"
+        name: 'Irene Instructor',
+        mbox: 'mailto:irene@example.com'
+      }, context: {
+        instructor: {
+          name: 'Irene Instructor',
+          mbox: 'mailto:irene@example.com'
+        },
+        contextActivities:{
+          parent: { id: 'http://example.com/activities/pie-filling-101' },
+          grouping: { id: 'http://example.com/activities/pie-town-school' }
+        }
       }
     });
   }
@@ -93,6 +103,10 @@ class Default extends React.Component {
 
   _handleVerbChange(value) {
     this.setState({verbDisplay: value});
+  }
+
+  _handleActivityTypeChange(value) {
+    this.setState({objectType: value});
   }
 
   _handleSubjectNameChange(event) {
@@ -126,11 +140,11 @@ class Default extends React.Component {
       <MuiThemeProvider muiTheme={muiTheme}>
         <div>
           <div style={styles.container}>
-            <Paper zDepth={2}>
+            <Paper zDepth={1}>
               <div style={styles.contentContainer}>
-                <h3>xAPI Testing Form</h3>
-                <p>Fill out the data below and <b>press Submit</b> to send it to
-                  the LRS.</p>
+                <h5>Fill out the data below and <b>press Submit</b> to send it
+                  to
+                  the LRS.</h5>
                 <div style={styles.formSection}>
                   <h5 style={styles.formSectionHeading}>Subject</h5>
                   <TextField
@@ -163,6 +177,14 @@ class Default extends React.Component {
                     value={this.state.objectName}
                     onChange={this._handleObjectNameChange.bind(this)}
                     fullWidth={true}/>
+                  <AutoComplete
+                    hintText="What type of activity"
+                    dataSource={LRS.getActivitiesList()}
+                    fullWidth={true}
+                    filter={AutoComplete.caseInsensitiveFilter}
+                    onUpdateInput={this._handleActivityTypeChange.bind(this)}
+                    onNewRequest={this._handleActivityTypeChange.bind(this)}
+                  />
                   <TextField
                     id="activityURL"
                     value={this.state.objectID}
@@ -173,6 +195,8 @@ class Default extends React.Component {
                   <RaisedButton label="Submit" primary={true}
                                 onMouseUp={this._handleSubmitPress.bind(this)}
                                 style={styles.buttonStyle}/>
+
+                  <p>View the statement in the console.</p>
                 </div>
               </div>
 

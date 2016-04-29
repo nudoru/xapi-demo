@@ -7,7 +7,7 @@ Statements sent here http://adlnet.github.io/xapi-statement-viewer/
 
 To run
 
-xAPI credentials are removed for the repo.
+xAPI credentials are removed for the repo. Should be defined in `app/scripts/app/stores/defaultState.js`
 
 * Clone the repo
 * `npm install`
